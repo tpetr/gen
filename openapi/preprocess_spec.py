@@ -104,12 +104,14 @@ def strip_tags_from_operation_id(operation, _):
 
 def add_custom_objects_spec(spec):
     with open(CUSTOM_OBJECTS_SPEC_PATH, 'r') as custom_objects_spec_file:
-        custom_objects_spec = json.loads(custom_objects_spec_file.read())
-    for path in custom_objects_spec.keys():
-        if path not in spec['paths'].keys():
-            spec['paths'][path] = custom_objects_spec[path]
+        custom_objects_spec = json.load(custom_objects_spec_file)
+    for path, value in custom_objects_spec.get('paths', {}).iteritems():
+        if path not in spec['paths']:
+            spec['paths'][path] = value
+    for path, value in custom_objects_spec.get('definitions', {}).iteritems():
+        if path not in spec['definitions']:
+            spec['definitions'][path] = value
     return spec
-
 
 def process_swagger(spec, client_language):
     spec = add_custom_objects_spec(spec)
